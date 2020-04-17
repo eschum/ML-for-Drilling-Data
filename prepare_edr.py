@@ -95,16 +95,5 @@ class PrepareEDR:
 
   #Implement a method that provides labeled training data for ROP optimization
 
-from google.colab import drive
-drive.mount('/content/gdrive/', force_remount=True)
-test_data = PrepareEDR("/content/gdrive/My Drive/COMP 642/proj/well_1.csv")
 
-orig_data, orig_headers = test_data.getOriginalData()
-
-print(orig_data)
-print(orig_headers)
-print(test_data.X_dr.shape)
-print(test_data.X.shape)
-
-test_data.getOriginalDF()
 
