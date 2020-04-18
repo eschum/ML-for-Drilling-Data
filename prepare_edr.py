@@ -90,6 +90,7 @@ class PrepareEDR:
     return (self.X_dr, self.headers_dr)
 
   def getOriginalDF(self):
+    print("executed")
     return pd.DataFrame(data = self.X, columns = self.headers)
 
   def getClusteringTrainingData(self):
