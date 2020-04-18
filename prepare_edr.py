@@ -79,7 +79,11 @@ class PrepareEDR:
     self.X = np.delete(self.X, diffSpikeOutliers, 0)
     self.X_dr = np.delete(self.X_dr, highWeightOutliers, 0)
     self.X_dr = np.delete(self.X_dr, diffSpikeOutliers, 0)
-    
+
+    #Add a sequential column to the original data, to add a dimension of time; for visualization purposes.
+    time_estimate = range(1, len(self.X) + 1)
+    self.X = np.append(self.X, np.expand_dims(time_estimate, axis=1), 1)
+    self.headers.append("Time Sequence")
 
 
   def getOriginalData(self):
