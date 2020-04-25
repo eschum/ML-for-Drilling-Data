@@ -118,7 +118,7 @@ class PrepareEDR:
     #we are only interested in the depth domain specified
     #Dimensionality reduction was further considered by removing all points where
     #bit was off bottom; and subsequently removing dimension of Bit Depth Ratio
-    depthRangeToDelete = np.where((self.X[:,2] < start) | (self.X[:,2] > end) | self.X[:,0] < 1.0)
+    depthRangeToDelete = np.where((self.X[:,2] < start) | (self.X[:,2] > end) | (self.X[:,0] < 1.0))
     lateralData = np.delete(self.X_dr, depthRangeToDelete, axis=0)
 
     #Move ROP to the end so that we can do inverse transforms easier.

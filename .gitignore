@@ -2,3 +2,4 @@
 *.docx
 *.csv
 __pycache__
+*.gdoc
