@@ -3,3 +3,5 @@
 *.csv
 __pycache__
 *.gdoc
+*.pdf
+prepare_EDR.ipynb

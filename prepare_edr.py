@@ -210,3 +210,49 @@ class PrepareEDR:
     headers_X = [x for x in self.headers_dr if x not in ["On Bottom ROP"]]
     return (X_train_reshape, y_train_reshape, X_test_reshape, y_test_reshape, 
             X_test, headers_X, ['ROP'], lateral_data_scaler)
+
+  
+  #Method: Prepare Lateral Data From Clustering
+  #Description: Here, we let the client cluster the data. 
+  #They provide the clustered data (with column index #10 having the class names), and
+  #this method then deletes all the other data, and returns the data to the client such that they
+  #can directly use the data with another model (MLP, in our target use case)
+  #Note also that this differs from prepareLateralData because after using the classes to filter data, 
+  #we will then go ahead and delete the class
+  def prepareLateralDataFromClustering(self, data, className):
+    #we are only interested in the depth domain specified
+    #Dimensionality reduction was further considered by removing all points where
+    #bit was off bottom; and subsequently removing dimension of Bit Depth Ratio
+    lateralData = data.to_numpy()
+    depthRangeToDelete = np.where(lateralData[:,10] != className) 
+    lateralData = np.delete(lateralData, depthRangeToDelete, axis=0)
+
+    #Move ROP to the end so that we can do inverse transforms easier.
+    #Delete the class column, as it has served its purpose, but now we want to remove this dimension.
+    ROP_data = lateralData[:,7]
+    lateralData_labelsLast = np.delete(lateralData, [7, 10], axis=1)
+    lateralData_labelsLast = np.concatenate((lateralData_labelsLast, np.expand_dims(ROP_data, axis=1)), axis=1)
+    
+    #Next, split into training and testing. 
+    train_set, test_set = train_test_split(lateralData_labelsLast, test_size=0.2, random_state = 42)
+
+    #Normalize the data prior to splitting up.
+    #Later, return this Scaler so that end users can perform inverse transform.
+    #Move ROP to the end
+    lateral_data_scaler = MinMaxScaler()  #Default is a range of [0,1]
+    train_set_std = lateral_data_scaler.fit_transform(train_set)
+    test_set_std = lateral_data_scaler.transform(test_set)
+
+    
+    #Remove the ROP data - index #7 - as the training labels.
+    y_train = train_set_std[:,9]
+    y_test = test_set_std[:,9]
+    X_train = np.delete(train_set_std, [9], 1)
+    X_test = np.delete(test_set_std, [9], 1)
+    
+    
+    #No further dimensionality reduction was performed in order to maintain uniformity
+    #With initial clustering data. 
+    #return X_train, y_train, X_test, y_test, X_headers, y_header, scaler
+    headers_X = [x for x in self.headers_dr if x not in ["On Bottom ROP", "Class"]]
+    return (X_train, y_train, X_test, y_test, headers_X, ['ROP'], lateral_data_scaler)
